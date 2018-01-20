@@ -1,4 +1,4 @@
-# API Crawler Github e Linledlin ★★
+# API Crawler Github e Linkedlin ★★
 
 ## Technologies used
 
