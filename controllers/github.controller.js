@@ -15,8 +15,9 @@ const getHtmlPageGitHub = (language, technology) => {
 
   const html = client.get(url, (data, response) => {
     GetQtdUserToTechnology(data.toString());
-    //const names = getName(data.toString());
+    const names = getName(data.toString());
     const emails = getEmail(data.toString());
+    const subTitle = getSubTitle(data.toString());
   });
 };
 
@@ -42,12 +43,13 @@ const getName = html => {
 const getEmail = html => {
   const emails = [];
   const $ = cheerio.load(html);
-  const email = $(
-    ".user-list > div > .d-flex > .user-list-info.ml-2 > ul > li"
-  ).map((i, elem) => {
-    console.log($(elem).text());
-    emails.push($(elem).text());
-  });
+  const email = $(".user-list > div > .d-flex > .user-list-info.ml-2  > p").map(
+    (i, elem) => {
+      console.log("aqui");
+      console.log($(elem).text());
+      emails.push($(elem).text());
+    }
+  );
   return emails;
 };
 
@@ -61,4 +63,15 @@ const getCity = html => {
     cities.push($(elem).text());
   });
   return cities;
+};
+
+const getSubTitle = html => {
+  const titles = [];
+  const $ = cheerio.load(html);
+  const title = $(".user-list > div > .d-flex > .user-list-info.ml-2  > p").map(
+    (i, elem) => {
+      titles.push($(elem).text());
+    }
+  );
+  return titles;
 };
