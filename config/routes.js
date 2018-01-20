@@ -6,9 +6,7 @@ const Router = express.Router();
 require("../utils/express-group-router");
 
 /* controllers -------------------------------------------------------------- */
-// const users = require("../controllers/UsersController");
-// const stats = require("../controllers/StatsController");
-const auth = require("../controllers/AuthController");
+const authController = require("../controllers/auth.controller");
 
 /* -------------------------------------------------------------------------- *\
  *  Exposes routes
@@ -16,31 +14,19 @@ const auth = require("../controllers/AuthController");
 
 module.exports = function(app, passport) {
   /* auth middlewares ------------------------------------------------------- */
-  const pauth = passport.authenticate.bind(passport);
+  const auth = passport.authenticate.bind(passport);
   const jwtAuth = passport.authenticate("jwt", { session: false });
   const requireSignin = passport.authenticate("local", { session: false });
   const authMid = require("./middlewares/authorization");
-  const statsMid = require("./middlewares/stats");
-  const commonAuth = [statsMid, authMid];
+  const commonAuth = authMid;
 
-  Router.group("/api/", Router => {});
-
-  // /* Stats ---------------------------------------------------------------- */
-  // Router.get("/stats", stats.curretStats);
-  // Router.get("/stats/:id", stats.curretStatsUrl);
-  // Router.get("/users/:userId/stats", stats.curretUserStats);
-
-  // /* Users ---------------------------------------------------------------- */
-  // Router.get("/urls/:id", commonAuth, users.getUrl);
-  // Router.post("/users", auth.register);
-  // Router.post("/users/:userId/urls", commonAuth, users.shortenUrl);
-  // Router.delete("/user/:userId", users.delete);
-
-  /* Auth ----------------------------------------------------------------- */
-  Router.get("/user/reset/:token", auth.getUserWithResetToken);
-  Router.post("/reset/:token", auth.resetPassword);
-  Router.post("/forgot", auth.forgotPassword);
-  Router.post("/login", requireSignin, auth.login);
+  Router.group("/api/", Router => {
+    /* Auth ----------------------------------------------------------------- */
+    Router.get("/user/reset/:token", authController.getUserWithResetToken);
+    Router.post("/reset/:token", authController.resetPassword);
+    Router.post("/forgot", authController.forgotPassword);
+    Router.post("/login", requireSignin, authController.login);
+  });
 
   app.use(Router);
 };

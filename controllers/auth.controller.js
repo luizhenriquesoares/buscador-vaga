@@ -3,11 +3,6 @@ const User = mongoose.model("User");
 const crypto = require("crypto");
 const { tokenForUser } = require("../utils/auth");
 
-/*
- * Verifica usuário é autenticado e retorna um token para autorização
- * 
- * @return JSON DATA
- */
 exports.login = (req, res) => {
   res.send({
     token: tokenForUser(req.user)
