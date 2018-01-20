@@ -1,9 +1,9 @@
-# API Encurtador URL ★★
+# API Crawler Github e Linledlin ★★
 
 ## Technologies used
 
-* Node JS 
-* Express 
+* Node JS
+* Express
 * Mongodb
 
 ## How to run in docker
@@ -18,11 +18,12 @@
 
 > sh install.sh
 
-## initializing app
-
-> sh start.sh
-
 ## how to configure the database
 
-1 - copy the .env.example file to .env 
+1 - copy the .env.example file to .env
 2 - change the url MONGODB_URI, to the localhost of the database instance server
+3 - run mongod on shell or cmd
+
+## build application
+
+> yarn install
