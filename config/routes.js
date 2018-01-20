@@ -7,7 +7,7 @@ require("../utils/express-group-router");
 
 /* controllers -------------------------------------------------------------- */
 const authController = require("../controllers/auth.controller");
-
+const githubController = require("../controllers/github.controller");
 /* -------------------------------------------------------------------------- *\
  *  Exposes routes
 \* -------------------------------------------------------------------------- */
@@ -21,6 +21,9 @@ module.exports = function(app, passport) {
   const commonAuth = authMid;
 
   Router.group("/api/", Router => {
+    /* GitHub --------------------------------------------------------------- */
+    Router.get("/github/allUsers", githubController.getAllUsers);
+
     /* Auth ----------------------------------------------------------------- */
     Router.get("/user/reset/:token", authController.getUserWithResetToken);
     Router.post("/reset/:token", authController.resetPassword);
