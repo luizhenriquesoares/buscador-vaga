@@ -26,4 +26,4 @@
 
 ## build application
 
-> yarn install
+> yarn start
