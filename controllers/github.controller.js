@@ -5,16 +5,17 @@ const { Client } = require("node-rest-client");
 // create instance client
 const client = new Client({});
 
-exports.getAllUsers = (req, res) => {
-  getHtmlPageGitHub(req, res);
+exports.getDataGitHub = (req, res) => {
+  const technology = req.params.technology;
+  const location = req.params.language;
+  getHtmlPageGitHub(technology, location);
 };
 
-const getHtmlPageGitHub = (language, technology) => {
-  const url =
-    "https://github.com/search?p=0&q=language%3Ajavascript+location%3Arecife&type=Users&utf8=%E2%9C%93";
+const getHtmlPageGitHub = (technology, location) => {
+  const url = `https://github.com/search?p=0&q=language%3A${technology}+location%3A${location}&type=Users&utf8=%E2%9C%93`;
 
   const html = client.get(url, (data, response) => {
-    GetQtdUserToTechnology(data.toString());
+    const qtdUsers = GetQtdUserToTechnology(data.toString());
     const names = getName(data.toString());
     const emails = getEmail(data.toString());
     const subTitle = getSubTitle(data.toString());

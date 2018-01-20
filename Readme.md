@@ -27,3 +27,7 @@
 ## build application
 
 > yarn start
+
+## endpoint API
+
+> http://localhost:3000/api/github/allUsers/javascript/recife

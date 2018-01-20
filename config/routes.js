@@ -22,7 +22,10 @@ module.exports = function(app, passport) {
 
   Router.group("/api/", Router => {
     /* GitHub --------------------------------------------------------------- */
-    Router.get("/github/allUsers", githubController.getAllUsers);
+    Router.get(
+      "/github/allUsers/:technology/:location",
+      githubController.getDataGitHub
+    );
 
     /* Auth ----------------------------------------------------------------- */
     Router.get("/user/reset/:token", authController.getUserWithResetToken);
