@@ -34,8 +34,13 @@ const getHtmlPageGitHub = async (req, i) => {
   return new Promise((resolve, reject) => {
     client.get(url, args, (data, response) => {
       const names = getName(data.toString());
-      // const subTitle = getSubTitle(data.toString());
-      dataStore.push(names);
+      const subTitle = getSubTitle(data.toString());
+      const cities = getCity(data.toString());
+      dataStore.push({
+        nome: names,
+        titulo: subTitle,
+        city: cities
+      });
       resolve(dataStore);
     });
   });
@@ -56,6 +61,21 @@ const GetQtdUserToTechnology = req => {
       resolve(qtdUsers);
     });
   });
+};
+
+const getSubTitle = html => {
+  const titles = [];
+  const $ = cheerio.load(html);
+  const title = $(".user-list > div > .d-flex > .user-list-info.ml-2  > p").map(
+    (i, elem) => {
+      titles.push(
+        $(elem)
+          .text()
+          .trim()
+      );
+    }
+  );
+  return titles;
 };
 
 const getName = html => {
@@ -86,18 +106,11 @@ const getCity = html => {
   const city = $(
     ".user-list > div > .d-flex > .user-list-info.ml-2 > ul > li"
   ).map((i, elem) => {
-    cities.push($(elem).text());
+    cities.push(
+      $(elem)
+        .text()
+        .trim()
+    );
   });
   return cities;
-};
-
-const getSubTitle = html => {
-  const titles = [];
-  const $ = cheerio.load(html);
-  const title = $(".user-list > div > .d-flex > .user-list-info.ml-2  > p").map(
-    (i, elem) => {
-      titles.push($(elem).text());
-    }
-  );
-  return titles;
 };
