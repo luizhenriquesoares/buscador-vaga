@@ -1,21 +1,22 @@
 const mongoose = require("mongoose");
 const cheerio = require("cheerio");
 const { Client } = require("node-rest-client");
-
 const { endpointGitHub } = require("../services/github");
 
 // create instance client
 const client = new Client();
 
 exports.getDataGitHub = async (req, res) => {
+  const result = [];
   const technology = req.params.technology;
   const location = req.params.location;
   const qtdUsers = await GetQtdUserToTechnology(req);
   for (let i = 1; i < 3; i++) {
-    const result = await getHtmlPageGitHub(req, i);
-    res.json(result);
-    console.log(result);
+    const dataList = await getHtmlPageGitHub(req, i);
+    console.log(dataList);
+    result.push(dataList[0]);
   }
+  res.json(result[0]);
 };
 
 const getHtmlPageGitHub = async (req, i) => {
