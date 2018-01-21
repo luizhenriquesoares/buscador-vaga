@@ -2,32 +2,59 @@ const mongoose = require("mongoose");
 const cheerio = require("cheerio");
 const { Client } = require("node-rest-client");
 
-// create instance client
-const client = new Client({});
+const { endpointGitHub } = require("../services/github");
 
-exports.getDataGitHub = (req, res) => {
+// create instance client
+const client = new Client();
+
+exports.getDataGitHub = async (req, res) => {
   const technology = req.params.technology;
-  const location = req.params.language;
-  getHtmlPageGitHub(technology, location);
+  const location = req.params.location;
+  const qtdUsers = await GetQtdUserToTechnology(req);
+  for (let i = 1; i < 3; i++) {
+    const result = await getHtmlPageGitHub(req, i);
+    res.json(result);
+    console.log(result);
+  }
 };
 
-const getHtmlPageGitHub = (technology, location) => {
-  const url = `https://github.com/search?p=0&q=language%3A${technology}+location%3A${location}&type=Users&utf8=%E2%9C%93`;
-
-  const html = client.get(url, (data, response) => {
-    const qtdUsers = GetQtdUserToTechnology(data.toString());
-    const names = getName(data.toString());
-    const emails = getEmail(data.toString());
-    const subTitle = getSubTitle(data.toString());
+const getHtmlPageGitHub = async (req, i) => {
+  const url = `https://github.com/search?p=${i}&q=language%3A${
+    req.params.technology
+  }+location%3A${req.params.location}&type=Users&utf8=%E2%9C%93`;
+  let args = {
+    headers: {
+      "Content-Type": "application/json",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
+    }
+  };
+  const dataStore = [];
+  return new Promise((resolve, reject) => {
+    client.get(url, args, (data, response) => {
+      const names = getName(data.toString());
+      // const subTitle = getSubTitle(data.toString());
+      dataStore.push(names);
+      resolve(dataStore);
+    });
   });
 };
 
-const GetQtdUserToTechnology = html => {
-  const $ = cheerio.load(html);
-  const qtdUsers = $(
-    ".d-flex.flex-justify-between.border-bottom.pb-3 > h3"
-  ).text();
-  return qtdUsers;
+const GetQtdUserToTechnology = req => {
+  const url = endpointGitHub(req);
+  const qtdUsers = [];
+  return new Promise((resolve, reject) => {
+    client.get(url, (data, response) => {
+      const html = data.toString();
+      const $ = cheerio.load(html);
+      const qtdUser = $(
+        ".d-flex.flex-justify-between.border-bottom.pb-3 > h3"
+      ).text();
+      const userCount = qtdUser.replace("users", "").trim();
+      qtdUsers.push(userCount);
+      resolve(qtdUsers);
+    });
+  });
 };
 
 const getName = html => {
@@ -46,8 +73,6 @@ const getEmail = html => {
   const $ = cheerio.load(html);
   const email = $(".user-list > div > .d-flex > .user-list-info.ml-2  > p").map(
     (i, elem) => {
-      console.log("aqui");
-      console.log($(elem).text());
       emails.push($(elem).text());
     }
   );
@@ -60,7 +85,6 @@ const getCity = html => {
   const city = $(
     ".user-list > div > .d-flex > .user-list-info.ml-2 > ul > li"
   ).map((i, elem) => {
-    console.log($(elem).text());
     cities.push($(elem).text());
   });
   return cities;
