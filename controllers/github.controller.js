@@ -7,16 +7,21 @@ const { endpointGitHub } = require("../services/github");
 const client = new Client();
 
 exports.getDataGitHub = async (req, res) => {
+  console.log(req);
   const result = [];
   const technology = req.params.technology;
   const location = req.params.location;
   const qtdUsers = await GetQtdUserToTechnology(req);
-  for (let i = 1; i < 3; i++) {
+  for (let i = 1; i < 2; i++) {
     const dataList = await getHtmlPageGitHub(req, i);
-    console.log(dataList);
-    result.push(dataList[0]);
+    const obj = {
+      name: dataList[0].nome,
+      subTitle: dataList[0].titulo,
+      city: dataList[0].city
+    };
+    result.push(obj);
   }
-  res.json(result[0]);
+  return result;
 };
 
 const getHtmlPageGitHub = async (req, i) => {
@@ -36,10 +41,12 @@ const getHtmlPageGitHub = async (req, i) => {
       const names = getName(data.toString());
       const subTitle = getSubTitle(data.toString());
       const cities = getCity(data.toString());
+      const emails = getEmail(data.toString());
       dataStore.push({
         nome: names,
         titulo: subTitle,
-        city: cities
+        city: cities,
+        email: emails
       });
       resolve(dataStore);
     });
@@ -92,11 +99,17 @@ const getName = html => {
 const getEmail = html => {
   const emails = [];
   const $ = cheerio.load(html);
-  const email = $(".user-list > div > .d-flex > .user-list-info.ml-2  > p").map(
-    (i, elem) => {
-      emails.push($(elem).text());
-    }
-  );
+
+  const aux = $(
+    "#user_search_results > div.user-list > div:nth-child(3) > div.d-flex > div > ul > li:nth-child(2) > a"
+  ).text();
+  console.log(aux);
+
+  const email = $(
+    ".user-list > div > .d-flex > .user-list-info.ml-2 > ul > li"
+  ).map((i, elem) => {
+    emails.push($(elem).text());
+  });
   return emails;
 };
 
